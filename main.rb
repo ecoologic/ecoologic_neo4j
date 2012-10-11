@@ -2,10 +2,9 @@
 
 puts "\n** Ecoologic Neo4j **\n"
 
-require 'pry'
-
-Dir['./app/*.rb'].each(&method(:require))
+require './config/application.rb'
 
 binding.pry
 
 puts "\nbye\n"
+

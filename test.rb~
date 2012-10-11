@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 
-puts 'Checking Credit Cards Tests only'
+puts 'Ecoologic Neo4j Tests only'
 
-Dir['./app/*.rb', './test/*.rb'].each(&method(:require))
+APP_ENV = 'test'
+
+require 'config/application.rb'
+Dir['./test/*.rb'].each(&method(:require))
+
+
 

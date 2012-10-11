@@ -1,0 +1,8 @@
+require 'rubygems'
+require 'neography'
+require 'pry'
+Dir['./app/**/*.rb', './lib/**/*.rb'].each(&method(:require))
+
+
+NEO = Neography::Rest.new
+
