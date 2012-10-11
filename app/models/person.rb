@@ -45,25 +45,25 @@ class Person
   end
 
   def make_friendship_with(person)
-    add_relationship({friends: :all}, person.node)
+    $neo.create_relationship 'friends', node, person.node
+    $neo.create_relationship 'friends', person.node, node
   end
 
-private
-
-  def add_relationships(name_types, type, other_node)
+    # type: in, out, all
+    # def add_relationships(name_types, other_node)
+    # $neo.create_relationship("friends", node1, node2)
     # $neo.create_relationship _class, node_hash, other.node_hash
-    args = name_types.map do |name, type = 'all'|
-      [
-        name.to_s,
-        type,
-        node_hash,
-        other_node.hash,
-        {:_class => name.to_s}.merge(attrs)
-      ]
-    end
-    $neo.batch args
-    
-  end
+    # args = name_types.map do |name, type = 'all'|
+    #   [
+    #     name.to_s,
+    #     type,
+    #     node_hash,
+    #     other_node.hash,
+    #     {:_class => name.to_s}.merge(attrs)
+    #   ]
+    # end
+    # $neo.batch args
+    # end
 
 end
 

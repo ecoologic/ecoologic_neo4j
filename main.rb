@@ -5,7 +5,8 @@ puts "\n** Ecoologic Neo4j **\n"
 require './config/application.rb'
 
 Person.delete_all
-Person.create name: 'erik'
+erik = Person.create name: 'erik'
+tia  = Person.create name: 'tia'
 
 binding.pry
 
