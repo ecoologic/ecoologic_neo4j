@@ -8,9 +8,15 @@ class Person
              chistro dylan mimmo}
 
   def self.create(attrs)
-    node = Neography::Node.create attrs.merge _class: to_s
-    $neo.add_node_to_index to_s, 'name', node['name'], node
-    new node
+    # non atomic:
+    # node = Neography::Node.create attrs.merge _class: to_s
+    # $neo.add_node_to_index to_s, 'name', node['name'], node
+    
+    # atomic
+    # {0} is a reference if you need to use it later in the batch
+    batch = $neo.batch [:create_node, attrs.merge(_class: to_s)],
+                       [:add_node_to_index, to_s, 'name', attrs['name'], '{0}']
+    new batch[0]['body']
   end
 
   def self.sample
