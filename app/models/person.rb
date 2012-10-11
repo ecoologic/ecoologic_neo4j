@@ -26,7 +26,7 @@ class Person
 
   def self.delete_all
     table = Sql.execute_query(:find_all_by_class, _class: to_s)
-    table['data'].map {|a| NEO.delete_node! a[0]}
+    table['data'].map {|a| $neo.delete_node! a[0]}
   end
 
   def self.load(id)
@@ -41,7 +41,28 @@ class Person
   end
 
   def neo_id
-    @node.neo_id
+    @node.neo_id.to_i
+  end
+
+  def make_friendship_with(person)
+    add_relationship({friends: :all}, person.node)
+  end
+
+private
+
+  def add_relationships(name_types, type, other_node)
+    # $neo.create_relationship _class, node_hash, other.node_hash
+    args = name_types.map do |name, type = 'all'|
+      [
+        name.to_s,
+        type,
+        node_hash,
+        other_node.hash,
+        {:_class => name.to_s}.merge(attrs)
+      ]
+    end
+    $neo.batch args
+    
   end
 
 end
