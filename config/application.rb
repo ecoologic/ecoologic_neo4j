@@ -4,5 +4,5 @@ require 'pry'
 Dir['./lib/**/*.rb', './app/**/*.rb'].each(&method(:require))
 
 
-NEO = Neography::Rest.new
+$neo = Neography::Rest.new
 

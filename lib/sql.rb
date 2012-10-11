@@ -5,7 +5,7 @@ class Sql
       puts "Reading cypher queries"
       YAML::load File.open './db/cypher_queries.yml'
     end
-    NEO.execute_query @@cypher_queries[name.to_s], args
+    $neo.execute_query @@cypher_queries[name.to_s], args
   end
 
 end
