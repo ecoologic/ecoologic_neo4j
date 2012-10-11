@@ -2,10 +2,8 @@
 
 puts 'Ecoologic Neo4j Tests only'
 
-APP_ENV = 'test'
+require './config/application.rb'
+require 'rspec'
 
-require 'config/application.rb'
-Dir['./test/*.rb'].each(&method(:require))
-
-
+Dir['./test/**/*.rb'].each(&method(:require))
 

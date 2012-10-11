@@ -1,0 +1,11 @@
+class CypherQuery
+
+  def self.get(name)
+    @@cypher_queries ||= begin
+      Rails.logger.info "Reading cypher queries"
+      YAML::load File.open Rails.root.join('db/cypher_queries.yml')
+    end[name]
+  end
+
+end
+

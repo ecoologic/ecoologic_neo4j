@@ -2,9 +2,9 @@
 
 puts "\n** Ecoologic Neo4j **\n"
 
-APP_ENV = 'development'
-
 require './config/application.rb'
+
+Person.delete_all
 
 binding.pry
 

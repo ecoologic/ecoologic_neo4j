@@ -1,0 +1,15 @@
+find_all_by_class:
+  "START n=node(*)
+  WHERE n._class! = {_class}
+  RETURN n"
+
+count_all_by_class:
+  "START n=node(*)
+  WHERE n._class! = {_class}
+  RETURN count(n)"
+
+find_by_id:
+  "start n=node(*)
+  where id(n) = {id}
+  return n"
+

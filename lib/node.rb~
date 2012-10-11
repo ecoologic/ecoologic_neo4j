@@ -3,6 +3,11 @@ module Node
 
   module ClassMethods
 
+    def sample
+      node_h = Sql.execute_query(:find_all_by_class, class: self.to_s)['data'].shuffle.first
+      new Neography::Node.new(node_h) if node_h
+    end
+
   end
 
   def initialize(node)
