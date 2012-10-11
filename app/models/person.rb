@@ -8,7 +8,9 @@ class Person
              chistro dylan mimmo}
 
   def self.create(attrs)
-    new Neography::Node.create attrs.merge(_class: to_s)
+    node = Neography::Node.create attrs.merge _class: to_s
+    $neo.add_node_to_index to_s, 'name', node['name'], node
+    new node
   end
 
   def self.sample
