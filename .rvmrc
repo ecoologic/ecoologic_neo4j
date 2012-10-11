@@ -1,0 +1,1 @@
+rvm gemset use ruby-1.9.3@ecoologic_neo4j --create
