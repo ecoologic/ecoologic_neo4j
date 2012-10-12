@@ -42,5 +42,15 @@ describe Person do
     end
   end
 
+  describe :make_friendship_with do
+    
+    it "should create a friends relationships between two nodes" do
+      pif = Person.create name: 'pif'
+      tom = Person.create name: 'tom'
+      pif.make_friendship_with tom
+      pif.friend_with?(tom).should be_true
+    end
+  end
+
 end
 

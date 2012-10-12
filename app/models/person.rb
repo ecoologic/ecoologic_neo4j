@@ -12,7 +12,7 @@ class Person
     # node = Neography::Node.create attrs.merge _class: to_s
     # $neo.add_node_to_index to_s, 'name', node['name'], node
     
-    # atomic
+    # atomic:
     # {0} is a reference if you need to use it later in the batch
     batch = $neo.batch [:create_node, attrs.merge(_class: to_s)],
                        [:add_node_to_index, to_s, 'name', attrs['name'], '{0}']
@@ -48,30 +48,81 @@ class Person
     end
   end
 
+  def name
+    @node[:name]
+  end
+
   def neo_id
     @node.neo_id.to_i
   end
 
-  def make_friendship_with(person)
-    $neo.create_relationship 'friends', node, person.node
-    $neo.create_relationship 'friends', person.node, node
+  def friend_with?(person, depth = 1)
+    # $neo.get_paths(start_node, destination_node,
+    #          { "type" => "friends" },
+    #          depth = 3,
+    #          algorithm = "shortestPath")
+    binding.pry
+    @node.simple_path_to(person.node).incoming(:friends).depth(depth)
   end
 
-    # type: in, out, all
-    # def add_relationships(name_types, other_node)
-    # $neo.create_relationship("friends", node1, node2)
-    # $neo.create_relationship _class, node_hash, other.node_hash
-    # args = name_types.map do |name, type = 'all'|
-    #   [
-    #     name.to_s,
-    #     type,
-    #     node_hash,
-    #     other_node.hash,
-    #     {:_class => name.to_s}.merge(attrs)
-    #   ]
-    # end
-    # $neo.batch args
-    # end
+  def make_friendship_with(person)
+    # non atomic:
+    # $neo.create_relationship 'friends', node, person.node
+    # $neo.create_relationship 'friends', person.node, node
+    
+    # atomic:
+    $neo.batch [:create_relationship, "knows"  , @node, person.node, {}],
+               [:create_relationship, "knows"  , person.node, @node, {}],
+               [:create_relationship, 'friends', @node, person.node, {}],
+               [:create_relationship, 'friends', person.node, @node, {}]
+  end
+
+  def delete!
+    $neo.delete_node! @node
+  end
+
+  # type: in, out, all
+  # def add_relationships(name_types, other_node)
+  # $neo.create_relationship("friends", node1, node2)
+  # $neo.create_relationship _class, node_hash, other.node_hash
+  # args = name_types.map do |name, type = 'all'|
+  #   [
+  #     name.to_s,
+  #     type,
+  #     node_hash,
+  #     other_node.hash,
+  #     {:_class => name.to_s}.merge(attrs)
+  #   ]
+  # end
+  # $neo.batch args
+  # end
+
+  def friends(depth = 1)
+    nodes = $neo.traverse(node,                                              # the node where the traversal starts
+                      "nodes",                                            # return_type "nodes", "relationships" or "paths"
+                      {"order" => "breadth first",                        # "breadth first" or "depth first" traversal order
+                       "uniqueness" => "node global",                     # See Uniqueness in API documentation for options.
+                       "relationships" => [{"type"=> "friends",         # A hash containg a description of the traversal
+                                            "direction" => "all"}],       #
+                       "depth" => depth})
+    nodes.map{|n| Person.new n}    
+  end
+
+  def count_friends
+    data = Sql.execute_query(:count_friends, id: neo_id)['data']
+    data.any? ? data[0][0] : 0
+  end
+
+  def mother=(person)
+    $neo.batch [:create_relationship, "knows", node, person.node, {}],
+               [:create_relationship, "knows", person.node, node, {}],
+               [:create_relationship, 'mother_of', person.node, node, {}]
+  end
+
+  def mother
+    data = Sql.execute_query(:find_mother, id: neo_id)['data']
+    data[0][0] if data.any?
+  end
 
 end
 
