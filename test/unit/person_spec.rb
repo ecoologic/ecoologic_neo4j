@@ -29,8 +29,21 @@ describe Person do
     it "should store the name in the index" do
       name = 'roger'
       Person.create name: name
-      $neo.get_node_index('Person', 'name', name).should_not be_nil
+      $neo.get_node_index('Person', 'name', name).should be_an_instance_of Array
     end
+  end
+
+  describe :find_by_name do
+    it "should return an existing person" do
+      Person.create name: 'erik'
+      Person.find_by_name('erik').should be_an_instance_of Person
+    end
+
+   it "should have a valid node in person" do
+      Person.create name: 'erik'
+      node = Person.find_by_name('erik').node rescue 'person is nil'
+      node.should be_an_instance_of Neography::Node
+   end
   end
 
   describe :sample do

@@ -39,7 +39,9 @@ class Person
   end
 
   def self.load(id)
-    new Neography::Node.load(id)
+    node = Neography::Node.load id
+    binding.pry
+    new node if node
   end
 
   def self.find_by_name(name)
@@ -47,9 +49,8 @@ class Person
     # data = Sql.execute_query(:find_by_name, name: name, _class: to_s)['data']
     
     # using index
-
     data = $neo.get_node_index 'Person', 'name', name
-    new data[0][0] if data
+    new data[0] if data
   end
 
   def initialize(arg)
