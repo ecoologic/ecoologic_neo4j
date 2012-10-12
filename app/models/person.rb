@@ -41,6 +41,12 @@ class Person
     new Neography::Node.load(id)
   end
 
+  def self.find_by_name(name)
+    # data = Sql.execute_query(:find_by_name, name: name, _class: to_s)['data']
+    data = $neo.get_node_index 'Person', 'name', name
+    new data[0][0] if data
+  end
+
   def initialize(arg)
     @node = case arg
     when Hash            then Neography::Node.new(arg)
