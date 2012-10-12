@@ -25,6 +25,12 @@ describe Person do
     it "should return a Person" do
       Person.create(name: 'livia').should be_an_instance_of Person
     end
+    
+    it "should store the name in the index" do
+      name = 'roger'
+      Person.create name: name
+      $neo.get_node_index('Person', 'name', name).should_not be_nil
+    end
   end
 
   describe :sample do
@@ -48,7 +54,7 @@ describe Person do
       pif = Person.create name: 'pif'
       tom = Person.create name: 'tom'
       pif.make_friendship_with tom
-      pif.friend_with?(tom).should be_true
+      pif.friend_with?(tom).should == true # TODO be_true true for hash?
     end
   end
 

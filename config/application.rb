@@ -2,9 +2,9 @@ require 'rubygems'
 require 'neography'
 require 'pry'
 
-$neo = Neography::Rest.new
+Dir['./lib/**/*.rb', './app/**/*.rb'].each(&method(:require))
 
-Dir['./lib/**/*.rb', './app/**/*.rb', './db/*.rb'].each(&method(:require))
+$neo = Neography::Rest.new
 
 
 

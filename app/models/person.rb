@@ -42,7 +42,11 @@ class Person
   end
 
   def self.find_by_name(name)
+    # without index:
     # data = Sql.execute_query(:find_by_name, name: name, _class: to_s)['data']
+    
+    # using index
+
     data = $neo.get_node_index 'Person', 'name', name
     new data[0][0] if data
   end
@@ -67,8 +71,9 @@ class Person
     #          { "type" => "friends" },
     #          depth = 3,
     #          algorithm = "shortestPath")
-    binding.pry
-    @node.simple_path_to(person.node).incoming(:friends).depth(depth)
+    
+    # TODO
+    @node.simple_path_to(person.node).incoming(:friends).depth(depth) # nodes.any?
   end
 
   def make_friendship_with(person)
@@ -87,30 +92,14 @@ class Person
     $neo.delete_node! @node
   end
 
-  # type: in, out, all
-  # def add_relationships(name_types, other_node)
-  # $neo.create_relationship("friends", node1, node2)
-  # $neo.create_relationship _class, node_hash, other.node_hash
-  # args = name_types.map do |name, type = 'all'|
-  #   [
-  #     name.to_s,
-  #     type,
-  #     node_hash,
-  #     other_node.hash,
-  #     {:_class => name.to_s}.merge(attrs)
-  #   ]
-  # end
-  # $neo.batch args
-  # end
-
   def friends(depth = 1)
     nodes = $neo.traverse(node,                                              # the node where the traversal starts
                       "nodes",                                            # return_type "nodes", "relationships" or "paths"
                       {"order" => "breadth first",                        # "breadth first" or "depth first" traversal order
                        "uniqueness" => "node global",                     # See Uniqueness in API documentation for options.
                        "relationships" => [{"type"=> "friends",         # A hash containg a description of the traversal
-                                            "direction" => "all"}],       #
-                       "depth" => depth})
+                                            "direction" => "all"}],       # possible directions: in, out, all
+                       "depth" => depth})                                 # instead of a prune evaluator
     nodes.map{|n| Person.new n}    
   end
 
