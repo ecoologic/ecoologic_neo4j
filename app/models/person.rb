@@ -69,13 +69,16 @@ class Person
   end
 
   def friend_with?(person, depth = 1)
-    # $neo.get_paths(start_node, destination_node,
+    # algorithms: https://github.com/maxdemarzi/neography/blob/master/lib/neography/node_path.rb
+    # FIXME: $neo.get_paths(start_node, destination_node,
     #          { "type" => "friends" },
     #          depth = 3,
     #          algorithm = "shortestPath")
-    
-    # TODO
-    @node.simple_path_to(person.node).incoming(:friends).depth(depth) # nodes.any?
+    # FIXME: $node.simple_path_to(person.node).incoming(:friends).depth(depth) # nodes.any?
+
+    $neo.get_path(node, person.node,
+                  {"type"=> "friends", "direction" => "in"},
+                  depth).any?
   end
 
   def make_friendship_with(person)
