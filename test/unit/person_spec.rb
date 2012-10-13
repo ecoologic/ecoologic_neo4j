@@ -71,5 +71,23 @@ describe Person do
     end
   end
 
+  describe :father_of do
+    it "should return the father of the sun" do
+      son = Person.create name: 'son'
+      father = Person.new name: 'father'
+      son.father = father
+      son.father.neo_id.should == father.neo_id
+    end
+  end
+
+  describe :son do
+    it "should return the father of the sun" do
+      son = Person.create name: 'son'
+      father = Person.new name: 'father'
+      son.father = father
+      father.son.neo_id.should == son.neo_id
+    end
+  end
+
 end
 

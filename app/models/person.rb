@@ -16,7 +16,7 @@ class Person
     # {0} is the result of the first line
     name = attrs[:name] || attrs['name'] # the index wouldn't work without this!
     batch = $neo.batch [:create_node, attrs.merge(_class: to_s)],
-                       [:add_node_to_index, "#{to_s}", 'name', name, '{0}']
+                       [:add_node_to_index, to_s, 'name', name, '{0}']
     new batch[0]['body']
   end
 
@@ -64,16 +64,16 @@ class Person
     @node[:name]
   end
 
+  def born_in
+    @node[:born_in]
+  end
+
   def neo_id
     @node.neo_id.to_i
   end
 
   def friend_with?(person, depth = 1)
     # algorithms: https://github.com/maxdemarzi/neography/blob/master/lib/neography/node_path.rb
-    # FIXME: $neo.get_paths(start_node, destination_node,
-    #          { "type" => "friends" },
-    #          depth = 3,
-    #          algorithm = "shortestPath")
     # FIXME: $node.simple_path_to(person.node).incoming(:friends).depth(depth) # nodes.any?
 
     $neo.get_path(node, person.node,
@@ -81,16 +81,14 @@ class Person
                   depth).any?
   end
 
-  def make_friendship_with(person)
+  def make_friendship_with(person, attrs = {})
     # non atomic:
     # $neo.create_relationship 'friends', node, person.node
     # $neo.create_relationship 'friends', person.node, node
     
     # atomic:
-    $neo.batch [:create_relationship, "knows"  , @node, person.node, {}],
-               [:create_relationship, "knows"  , person.node, @node, {}],
-               [:create_relationship, 'friends', @node, person.node, {}],
-               [:create_relationship, 'friends', person.node, @node, {}]
+    $neo.batch [:create_relationship, 'friends', @node, person.node, attrs],
+               [:create_relationship, 'friends', person.node, @node, attrs]
   end
 
   def delete!
@@ -114,14 +112,17 @@ class Person
   end
 
   def mother=(person)
-    $neo.batch [:create_relationship, "knows", node, person.node, {}],
-               [:create_relationship, "knows", person.node, node, {}],
-               [:create_relationship, 'mother_of', person.node, node, {}]
+    $neo.create_relationship :mother_of, person.node, @node, since: person.born_in
   end
 
-  def mother
-    data = Sql.execute_query(:find_mother, id: neo_id)['data']
+  def father
+    data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
     data[0][0] if data.any?
+  end
+
+  def son
+    data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
+    data[1][0] if data.any?
   end
 
 end
