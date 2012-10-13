@@ -95,6 +95,7 @@ describe Person do
     it "should return the son of that person" do
       father = Person.new name: 'father', born_in: 1970
       son    = father.make_son 'son', 1990
+      binding.pry
       father.son.neo_id.should == son.neo_id
     end
   end

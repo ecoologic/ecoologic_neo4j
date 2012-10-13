@@ -1,12 +1,5 @@
 class Person 
 
-  attr_accessor :node
-
-  NAMES = %w{erik tia roby simo martina giulia katia
-             mary gio frengo omar priscilla alessio
-             stefania stefano lucia ema genoveffa callisto
-             chistro dylan mimmo}
-
   def initialize(arg)
     @node = if arg.is_a? Hash
       Neography::Node.create arg
@@ -14,6 +7,18 @@ class Person
       arg
     end
   end
+
+  def to_s
+    "#<Person:#{neo_id} name="#{name}", born_in=#{born_in}>"
+  end
+
+  attr_accessor :node
+
+  NAMES = %w{erik tia roby simo martina giulia katia
+             mary gio frengo omar priscilla alessio
+             stefania stefano lucia ema genoveffa callisto
+             chistro dylan mimmo}
+
 
   def self.create(attrs)
     # non atomic:
@@ -48,7 +53,6 @@ class Person
 
   def self.load(id)
     node = Neography::Node.load id
-    binding.pry
     new node if node
   end
 
@@ -58,7 +62,6 @@ class Person
     
     # using index
     data = $neo.get_node_index 'Person', 'name', name
-    binding.pry
     new Neography::Node.new data[0] if data
   end
 
@@ -114,18 +117,23 @@ class Person
   end
 
   def make_son(name, year)
-    son = Person.new name: name, year: year
-    $neo.create_relationship :father_of, son.node, @node, since: son.born_in
+    son = Person.new name: name, born_in: year
+    $neo.create_relationship :father_of, @node, son.node, since: son.born_in
+    son
   end
 
   def father
-    data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
-    data[0][0] if data.any?
+    @father ||= begin
+      data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
+      Person.new Neography::Node.new data[0][0] if data.any?
+    end
   end
 
   def son
-    data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
-    data[1][0] if data.any?
+    @son ||= begin
+      data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
+      Person.new Neography::Node.new data[1][0] if data.any?
+    end
   end
 
 
