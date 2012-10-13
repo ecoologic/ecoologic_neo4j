@@ -19,7 +19,12 @@ count_friends:
   match n -[:friends]-> f
   return count(f)"
 
-find_father_and_son:
+find_father:
   "start s=node({id})
   match f -[:father_of]-> s
-  return f, s"
+  return f"
+
+find_son:
+  "start f=node({id})
+  match f -[:father_of]-> s
+  return s"

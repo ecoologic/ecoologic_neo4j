@@ -8,10 +8,6 @@ class Person
     end
   end
 
-  def to_s
-    "#<Person:#{neo_id} name="#{name}", born_in=#{born_in}>"
-  end
-
   attr_accessor :node
 
   NAMES = %w{erik tia roby simo martina giulia katia
@@ -63,6 +59,10 @@ class Person
     # using index
     data = $neo.get_node_index 'Person', 'name', name
     new Neography::Node.new data[0] if data
+  end
+
+  def to_s
+    %{#<Person:#{neo_id} name="#{name}", born_in=#{born_in}>}
   end
 
   def name
@@ -124,15 +124,15 @@ class Person
 
   def father
     @father ||= begin
-      data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
+      data = Sql.execute_query(:find_father, id: neo_id)['data']
       Person.new Neography::Node.new data[0][0] if data.any?
     end
   end
 
   def son
     @son ||= begin
-      data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
-      Person.new Neography::Node.new data[1][0] if data.any?
+      data = Sql.execute_query(:find_son, id: neo_id)['data']
+      Person.new Neography::Node.new data[0][0] if data.any?
     end
   end
 
