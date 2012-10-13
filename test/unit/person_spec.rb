@@ -8,6 +8,18 @@ describe Person do
     Person.delete_all
   end
 
+  describe :initialize do
+    it "should return a person when a hash of properties is given" do
+      p = Person.new name: 'new', born_in: 1970
+      p.should be_an_instance_of Person
+    end
+    
+    it "should return a person when a node is given" do
+      p = Person.create name: 'new'
+      p.should be_an_instance_of Person
+    end
+  end
+
   describe :count_all do
     it "should return 0 if there is no-one in the graph" do
       Person.count_all.should == 0
@@ -67,24 +79,22 @@ describe Person do
       pif = Person.create name: 'pif'
       tom = Person.create name: 'tom'
       pif.make_friendship_with tom
-      pif.friend_with?(tom).should == true # TODO be_true true for hash?
+      pif.friend_with?(tom).should == true # be_true true for hash?
     end
   end
 
-  describe :father_of do
-    it "should return the father of the sun" do
-      son = Person.create name: 'son'
-      father = Person.new name: 'father'
-      son.father = father
+  describe :make_son do
+    it "should return the son with that father" do
+      father = Person.new name: 'father', born_in: 1970
+      son    = father.make_son 'son', 1990
       son.father.neo_id.should == father.neo_id
     end
   end
 
   describe :son do
-    it "should return the father of the sun" do
-      son = Person.create name: 'son'
-      father = Person.new name: 'father'
-      son.father = father
+    it "should return the son of that person" do
+      father = Person.new name: 'father', born_in: 1970
+      son    = father.make_son 'son', 1990
       father.son.neo_id.should == son.neo_id
     end
   end

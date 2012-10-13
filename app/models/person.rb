@@ -7,6 +7,14 @@ class Person
              stefania stefano lucia ema genoveffa callisto
              chistro dylan mimmo}
 
+  def initialize(arg)
+    @node = if arg.is_a? Hash
+      Neography::Node.create arg
+    elsif arg.is_a? Neography::Node
+      arg
+    end
+  end
+
   def self.create(attrs)
     # non atomic:
     # node = Neography::Node.create attrs.merge _class: to_s
@@ -17,7 +25,7 @@ class Person
     name = attrs[:name] || attrs['name'] # the index wouldn't work without this!
     batch = $neo.batch [:create_node, attrs.merge(_class: to_s)],
                        [:add_node_to_index, to_s, 'name', name, '{0}']
-    new batch[0]['body']
+    new Neography::Node.new batch[0]['body']
   end
 
   def self.sample
@@ -50,14 +58,8 @@ class Person
     
     # using index
     data = $neo.get_node_index 'Person', 'name', name
-    new data[0] if data
-  end
-
-  def initialize(arg)
-    @node = case arg
-    when Hash            then Neography::Node.new(arg)
-    when Neography::Node then arg
-    end
+    binding.pry
+    new Neography::Node.new data[0] if data
   end
 
   def name
@@ -111,8 +113,9 @@ class Person
     data.any? ? data[0][0] : 0
   end
 
-  def mother=(person)
-    $neo.create_relationship :mother_of, person.node, @node, since: person.born_in
+  def make_son(name, year)
+    son = Person.new name: name, year: year
+    $neo.create_relationship :father_of, son.node, @node, since: son.born_in
   end
 
   def father
@@ -124,6 +127,7 @@ class Person
     data = Sql.execute_query(:find_father_and_son, id: neo_id)['data']
     data[1][0] if data.any?
   end
+
 
 end
 
