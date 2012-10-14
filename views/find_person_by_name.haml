@@ -1,0 +1,14 @@
+%html
+  %head
+    %link{type: 'text/css', src: 'stylesheets/screen.css'} 
+  %body
+
+    - if @person
+      %h1= @person.name
+  
+      %ul
+        %li= @person.name
+        %li= @person.born_in
+    - else
+      %h1 #{params['name']} not found
+    %a{href: '/'} Back
