@@ -20,6 +20,18 @@ describe Person do
     end
   end
 
+  describe :all do
+    
+    it "should return a list of people" do
+      Person.create name: 'erik'
+      Person.create name: 'mark'
+      all = Person.all
+      all.each {|p| p.should be_an_instance_of Person} &&
+      all.size.should == 2
+    end
+    
+  end
+
   describe :count_all do
     it "should return 0 if there is no-one in the graph" do
       Person.count_all.should == 0

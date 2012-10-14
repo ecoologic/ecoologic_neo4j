@@ -9,6 +9,7 @@ class EcoologicNeo4j < Sinatra::Base
   end
 
   get '/' do
+    @people = Person.all
     haml :root
   end
   

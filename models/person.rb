@@ -15,6 +15,11 @@ class Person
              stefania stefano lucia ema genoveffa callisto
              chistro dylan mimmo}
 
+  def self.all
+    table = Sql.execute_query(:find_all_by_class, _class: to_s)
+    table['data'].map {|row| Person.new row[0]}
+  end
+
 
   def self.create(attrs)
     # non atomic:

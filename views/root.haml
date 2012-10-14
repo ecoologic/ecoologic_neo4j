@@ -4,7 +4,22 @@
   %body
 
     %h1 Ecoologic Log4j
-    
+
+    %h2 People:
+    - if @people
+      %table
+        %tr
+          %th Name
+          %th Born in
+          %th Friends
+        - @people.each do |person|
+          %tr
+            %td= person.name
+            %td= person.born_in
+            %td= person.count_friends
+    - else
+      %h2 No one in the db yet (if you run the tests the db gets cleared and you should restart the server)
+
     %form{action: '/', method: "post"}
       %input{type: :text, name: :name}
       %input{type: :submit}
