@@ -10,7 +10,7 @@ describe Person do
 
   describe :initialize do
     it "should return a person when a hash of properties is given" do
-      p = Person.new name: 'new', born_in: 1970
+      p = Person.create name: 'new', born_in: 1970
       p.should be_an_instance_of Person
     end
     
@@ -73,19 +73,19 @@ describe Person do
     end
   end
 
-  describe :make_friendship_with do
+  describe :make_friends_with do
     
     it "should create a friends relationships between two nodes" do
       pif = Person.create name: 'pif'
       tom = Person.create name: 'tom'
-      pif.make_friendship_with tom
+      pif.make_friends_with tom
       pif.friend_with?(tom).should == true # be_true true for hash?
     end
   end
 
   describe :make_son do
     it "should return the son with that father" do
-      father = Person.new name: 'father', born_in: 1970
+      father = Person.create name: 'father', born_in: 1970
       son    = father.make_son 'son', 1990
       son.father.neo_id.should == father.neo_id
     end
@@ -93,9 +93,8 @@ describe Person do
 
   describe :son do
     it "should return the son of that person" do
-      father = Person.new name: 'father', born_in: 1970
+      father = Person.create name: 'father', born_in: 1970
       son    = father.make_son 'son', 1990
-      binding.pry
       father.son.neo_id.should == son.neo_id
     end
   end

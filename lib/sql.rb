@@ -5,6 +5,8 @@ class Sql
     $neo.execute_query @@cypher_queries[name.to_s], args
   end
 
+private
+
   def self.load!
     puts "Reading cypher queries"
     YAML::load File.open './db/cypher_queries.yml'

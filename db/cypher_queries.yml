@@ -2,17 +2,16 @@ find_by_name:
   "start n=node(*)
   where n.name! = {name} and n._class! = {_class}
   return n"
-  
 
 find_all_by_class:
-  "START n=node(*)
-  WHERE n._class! = {_class}
-  RETURN n"
+  "start n=node(*)
+  where n._class! = {_class}
+  return n"
 
 count_all_by_class:
-  "START n=node(*)
-  WHERE n._class! = {_class}
-  RETURN count(n)"
+  "start n=node(*)
+  where n._class! = {_class}
+  return count(n)"
 
 count_friends:
   "start n=node({id})
@@ -28,3 +27,8 @@ find_son:
   "start f=node({id})
   match f -[:father_of]-> s
   return s"
+
+find_brothers:
+  "start n=node({id})
+  match n -[:brothers*]- b
+  return distinct(b)"

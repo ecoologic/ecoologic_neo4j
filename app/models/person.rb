@@ -2,10 +2,10 @@ class Person
 
   def initialize(arg)
     @node = if arg.is_a? Hash
-      Neography::Node.create arg
-    elsif arg.is_a? Neography::Node
-      arg
-    end
+              Neography::Node.new(arg)
+            elsif arg.is_a? Neography::Node
+              arg
+            end
   end
 
   attr_accessor :node
@@ -22,18 +22,17 @@ class Person
     # $neo.add_node_to_index to_s, 'name', node['name'], node
     
     # atomic:
-    # {0} is the result of the first line
     name = attrs[:name] || attrs['name'] # the index wouldn't work without this!
     batch = $neo.batch [:create_node, attrs.merge(_class: to_s)],
-                       [:add_node_to_index, to_s, 'name', name, '{0}']
-    new Neography::Node.new batch[0]['body']
+                       [:add_node_to_index, to_s, 'name', name, '{0}'] # {0} is the result of the first line
+    new batch[0]['body']
   end
 
   def self.sample
     data = Sql.execute_query(:find_all_by_class, _class: to_s)['data']
     if data.any?
       node_h = data.shuffle[0][0]
-      new Neography::Node.new(node_h)
+      new node_h
     end
   end
 
@@ -58,7 +57,7 @@ class Person
     
     # using index
     data = $neo.get_node_index 'Person', 'name', name
-    new Neography::Node.new data[0] if data
+    new data[0] if data
   end
 
   def to_s
@@ -86,7 +85,7 @@ class Person
                   depth).any?
   end
 
-  def make_friendship_with(person, attrs = {})
+  def make_friends_with(person, attrs = {})
     # non atomic:
     # $neo.create_relationship 'friends', node, person.node
     # $neo.create_relationship 'friends', person.node, node
@@ -94,6 +93,13 @@ class Person
     # atomic:
     $neo.batch [:create_relationship, 'friends', @node, person.node, attrs],
                [:create_relationship, 'friends', person.node, @node, attrs]
+  end
+
+  # TODO: refactor with make_friends_with 
+  def make_brothers_with(person, attrs = {})
+    year = born_in < person.born_in ? born_in : person.born_in
+    $neo.batch [:create_relationship, 'brothers', @node, person.node, attrs.merge(since: year)],
+               [:create_relationship, 'brothers', person.node, @node, attrs.merge(since: year)]
   end
 
   def delete!
@@ -111,13 +117,25 @@ class Person
     nodes.map{|n| Person.new n}    
   end
 
+  def brothers
+    nodes = $neo.traverse(node,                                              # the node where the traversal starts
+                      "nodes",                                            # return_type "nodes", "relationships" or "paths"
+                      {"order" => "breadth first",                        # "breadth first" or "depth first" traversal order
+                       "uniqueness" => "node global",                     # See Uniqueness in API documentation for options.
+                       "relationships" => [{"type"=> "brothers",         # A hash containg a description of the traversal
+                                            "direction" => "all"}],       # possible directions: in, out, all
+                       "depth" => 1})                                 # instead of a prune evaluator
+    nodes.map{|n| Person.new n}    
+  end
+
+
   def count_friends
     data = Sql.execute_query(:count_friends, id: neo_id)['data']
     data.any? ? data[0][0] : 0
   end
 
   def make_son(name, year)
-    son = Person.new name: name, born_in: year
+    son = Person.create name: name, born_in: year
     $neo.create_relationship :father_of, @node, son.node, since: son.born_in
     son
   end
@@ -125,14 +143,14 @@ class Person
   def father
     @father ||= begin
       data = Sql.execute_query(:find_father, id: neo_id)['data']
-      Person.new Neography::Node.new data[0][0] if data.any?
+      Person.new data[0][0] if data.any?
     end
   end
 
   def son
     @son ||= begin
       data = Sql.execute_query(:find_son, id: neo_id)['data']
-      Person.new Neography::Node.new data[0][0] if data.any?
+      Person.new data[0][0] if data.any?
     end
   end
 
