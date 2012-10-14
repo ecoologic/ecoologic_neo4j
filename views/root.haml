@@ -1,0 +1,15 @@
+%html
+  %head
+    %link{type: 'text/css', src: 'stylesheets/screen.css'} 
+  %body
+
+    %h1 Ecoologic Log4j
+    
+    %h2 Message: #{@message}
+    
+    %form{action: '/', method: "post"}
+      %input{type: :text, name: :name}
+      %input{type: :submit}
+    
+
+
