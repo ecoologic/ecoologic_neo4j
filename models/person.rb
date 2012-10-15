@@ -1,5 +1,11 @@
+# persists people in nodes, default attribute class: _Person
 class Person 
 
+  # arg will initialize the node,
+  # can be:
+  # `Hash`: usually when you read existing data from the neo server
+  # `Neography::Node` if you happen to already have the node
+  # 
   def initialize(arg)
     @node = if arg.is_a? Hash
               Neography::Node.new(arg)
@@ -21,6 +27,8 @@ class Person
   end
 
 
+  # attrs: a hash with the data values for the node
+  #        eg: {name: 'goffrey', born_in: 1990}
   def self.create(attrs)
     # non atomic:
     # node = Neography::Node.create attrs.merge _class: to_s
@@ -33,6 +41,7 @@ class Person
     new batch[0]['body']
   end
 
+  # a random person
   def self.sample
     data = Sql.execute_query(:find_all_by_class, _class: to_s)['data']
     if data.any?
@@ -46,6 +55,7 @@ class Person
     data.any? ? data[0][0] : 0
   end
 
+  # TODO: could be done in cypher with neo4j 1.8
   def self.delete_all
     table = Sql.execute_query(:find_all_by_class, _class: to_s)
     table['data'].map {|a| $neo.delete_node! a[0]}
@@ -81,9 +91,9 @@ class Person
     @node.neo_id.to_i
   end
 
+  # depth 1 is a direct friend, depth 2 is a friend of a friend
   def friend_with?(person, depth = 1)
     # algorithms: https://github.com/maxdemarzi/neography/blob/master/lib/neography/node_path.rb
-    # FIXME: $node.simple_path_to(person.node).incoming(:friends).depth(depth) # nodes.any?
 
     $neo.get_path(node, person.node,
                   {"type"=> "friends", "direction" => "in"},

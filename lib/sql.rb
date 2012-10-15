@@ -1,3 +1,4 @@
+# execute queries from a yaml file
 class Sql
 
   def self.execute_query(name, args = {})

@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-# FIXME
 
 puts 'Ecoologic Neo4j Tests only'
 

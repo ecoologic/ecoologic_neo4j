@@ -1,6 +1,5 @@
 # anything regarding the app logic
 
-require 'rubygems'
 require 'neography'
 # require 'pry'
 
