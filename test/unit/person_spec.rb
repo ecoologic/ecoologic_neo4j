@@ -37,7 +37,7 @@ describe Person do
       Person.count_all.should == 0
     end
     
-    it "should return 2 if there are 2 people in the graph" do
+    it "should return the number of people in the graph" do
       Person.create name: 'erik'
       Person.create name: 'tia'
       Person.create name: 'roby'
@@ -91,7 +91,7 @@ describe Person do
       pif = Person.create name: 'pif'
       tom = Person.create name: 'tom'
       pif.make_friends_with tom
-      pif.friend_with?(tom).should == true # be_true true for hash?
+      pif.friend_with?(tom).should == true
     end
   end
 

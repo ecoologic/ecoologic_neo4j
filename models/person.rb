@@ -29,6 +29,7 @@ class Person
 
   # attrs: a hash with the data values for the node
   #        eg: {name: 'goffrey', born_in: 1990}
+  # a _class: Person attribute is added
   def self.create(attrs)
     # non atomic:
     # node = Neography::Node.create attrs.merge _class: to_s
