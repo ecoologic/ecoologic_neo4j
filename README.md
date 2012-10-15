@@ -4,7 +4,7 @@ A first project to explore Neo4j using [Neography](https://github.com/maxdemarzi
 to stick with regular MRI ruby.
 
 There is a sinatra application in the project but it's in a very early stage of development.
-**I suggest reading the tests** to get an understanding of what this little project is capable of,
+**I suggest reading focusing on tests and console** to get an understanding of what this little project is capable of,
 which is basically CR(u)D of nodes and relationship creations both through batch (i.e. transactions) and not.
 
 ## Install
@@ -17,6 +17,7 @@ The file `.rvmrc` in the root of the project will create the gemset `ecoologic_n
 
     bundle
     rspec test.rb
+    ruby console.rb
 
 **Important:** I haven't found a way yet to namespace the nodes in a separate database, and the community doesn't
 seem that much worried about this, but if you have valuable data in your neo server think twice before running this project
@@ -40,8 +41,7 @@ I very hardly use global variables in production, I'll move it in following refa
 
 `lib/sql.rb` is a utility to read the queries stored in a yaml file, so all queries are in the same place.
 
-`db/seeds.rb` was used for the old console on which I started the project, but when I introduced sinatra pry
-went in stackoverflow and I kept my focus on neo.
+`db/seeds.rb` is used for the console on which I started the project.
 
 As I'm learning I'm trying to mix cypher queries and code access to data.
 
