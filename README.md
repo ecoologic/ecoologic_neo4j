@@ -1,4 +1,9 @@
-# Ecoologi Neo4j
+* Working: Yes
+* Interesting: Yes
+* Progress: Abandoned
+* Purpose: Experiment
+
+# Ecoologic Neo4j
 
 A first project to explore Neo4j using [Neography](https://github.com/maxdemarzi/neography.git)
 to stick with regular MRI ruby.
